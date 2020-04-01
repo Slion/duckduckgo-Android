@@ -45,21 +45,38 @@ android {
         debug {
             applicationIdSuffix ".debug"
             pseudoLocalesEnabled false
-            manifestPlaceholders = [
-                    appIcon: "@mipmap/ic_launcher_blue",
-                    appIconRound: "@mipmap/ic_launcher_blue_round"
-            ]
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+        }
+
+    }
+
+    flavorDimensions "version"
+
+    productFlavors {
+
+        Default {
+            dimension "version"
+            applicationIdSuffix ""
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher_red",
                     appIconRound: "@mipmap/ic_launcher_red_round"
             ]
         }
+
+        Slions {
+            dimension "version"
+            applicationIdSuffix ".slions"
+            manifestPlaceholders = [
+                    appIcon: "@mipmap/ic_launcher_black",
+                    appIconRound: "@mipmap/ic_launcher_black_round"
+            ]
+        }
     }
+
     externalNativeBuild {
 
         cmake {
