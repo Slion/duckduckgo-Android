@@ -18,12 +18,14 @@ package com.duckduckgo.app.global
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.duckduckgo.app.global.view.setupStatusBar
 import com.duckduckgo.app.settings.db.SettingsDataStore
 import dagger.android.AndroidInjection
 import javax.inject.Inject
@@ -73,6 +75,24 @@ abstract class DuckDuckGoActivity : AppCompatActivity() {
             LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(it)
         }
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Make sure we fix status bar when resuming
+        setupStatusBar(resources.configuration)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // Make sure we fix status bar after screen rotation
+        setupStatusBar(newConfig)
+    }
+
+    override fun onWindowFocusChanged (hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        // Make sure we fix status bar after popup menu messed it up
+        setupStatusBar(resources.configuration)
     }
 
     protected inline fun <reified V : ViewModel> bindViewModel() = lazy { ViewModelProviders.of(this, viewModelFactory).get(V::class.java) }

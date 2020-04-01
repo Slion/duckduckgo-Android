@@ -1537,14 +1537,16 @@ class BrowserTabFragment : Fragment(), FindListener, CoroutineScope {
         private fun goFullScreen() {
             Timber.i("Entering full screen")
             webViewFullScreenContainer.show()
-            activity?.toggleFullScreen()
+            activity?.enableFullScreen()
         }
 
         private fun exitFullScreen() {
             Timber.i("Exiting full screen")
             webViewFullScreenContainer.removeAllViews()
             webViewFullScreenContainer.gone()
-            activity?.toggleFullScreen()
+            activity?.disableFullScreen()
+            // Make sure our status bar is setup properly after exiting full screen mode
+            activity?.setupStatusBar(resources.configuration)
         }
 
         private fun shouldUpdateOmnibarTextInput(viewState: OmnibarViewState, omnibarInput: String?) =

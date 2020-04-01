@@ -19,6 +19,7 @@ package com.duckduckgo.app.global.view
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -56,12 +57,22 @@ fun Context.fadeTransitionConfig(): Bundle? {
     return config.toBundle()
 }
 
-fun FragmentActivity.toggleFullScreen() {
+fun FragmentActivity.enableFullScreen() {
 
     val newUiOptions = window.decorView.systemUiVisibility
-        .xor(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
-        .xor(View.SYSTEM_UI_FLAG_FULLSCREEN)
-        .xor(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+            .or(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+            .or(View.SYSTEM_UI_FLAG_FULLSCREEN)
+            .or(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
+    window.decorView.systemUiVisibility = newUiOptions
+}
+
+fun FragmentActivity.disableFullScreen() {
+
+    val newUiOptions = window.decorView.systemUiVisibility
+            .and(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION.inv())
+            .and(View.SYSTEM_UI_FLAG_FULLSCREEN.inv())
+            .and(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY.inv())
 
     window.decorView.systemUiVisibility = newUiOptions
 }
@@ -69,4 +80,20 @@ fun FragmentActivity.toggleFullScreen() {
 fun FragmentActivity.isImmersiveModeEnabled(): Boolean {
     val uiOptions = window.decorView.systemUiVisibility
     return uiOptions or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY == uiOptions
+}
+
+fun FragmentActivity.setupStatusBar(config: Configuration)
+{
+    // Hide the status bar.
+    if(config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        // Add full screen flag
+        window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_FULLSCREEN;
+    } else {
+        // Check if we were set to full screen before modifying the flag to avoid status bar animation when closing popup menu
+        if (window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_FULLSCREEN == View.SYSTEM_UI_FLAG_FULLSCREEN ) {
+            // Remove full screen flag
+            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_FULLSCREEN.inv();
+        }
+
+    }
 }
